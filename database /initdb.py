@@ -1,25 +1,26 @@
-import sqlite3
+import json
+import os
 
-def initinterviewdatabase():
-    conn = sqlite3.connect("interviewapp.db")
-    cursor = conn.cursor()
-    conn.execute("PRAGMA journal_mode=WAL;")
-    
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS evaluations (
-            evaluationid TEXT PRIMARY KEY,
-            questionid TEXT NOT NULL,
-            techscore REAL,
-            commscore REAL,
-            wpm INTEGER,
-            verifierscore REAL,
-            perfectedphrase TEXT,
-            quizpassed BOOLEAN DEFAULT 0
-        )
-    ''')
-    
-    conn.commit()
-    conn.close()
-    print("Database initialized safely with individual score columns and WAL mode!")
+DATA_FILE = "data_store.json"
 
-initinterviewdatabase()
+def get_default_db():
+    return {
+        "session": {},
+        "questions": [],
+        "evaluations": []
+    }
+
+def load_db():
+    """Loads session state from local JSON storage."""
+    if os.path.exists(DATA_FILE):
+        try:
+            with open(DATA_FILE, "r") as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            return get_default_db()
+    return get_default_db()
+
+def save_db(data):
+    """Persists current state into local JSON storage."""
+    with open(DATA_FILE, "w") as f:
+        json.dump(data, f, indent=2)
