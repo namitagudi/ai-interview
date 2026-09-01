@@ -1,9 +1,14 @@
-pycache/
-*.pyc
+# Local JSON DB & Temporary Audio
+data_store.json
+temp_recording.wav
+*.wav
+
+# Python & Environment
+__pycache__/
+*.py[cod]
 .venv/
 env/
-*.db
-*.db-wal
-*.db-shm
+.env
+
+# Streamlit
 .streamlit/
-.DS_Store
