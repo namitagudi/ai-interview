@@ -1,1 +1,9 @@
-
+pycache/
+*.pyc
+.venv/
+env/
+*.db
+*.db-wal
+*.db-shm
+.streamlit/
+.DS_Store
