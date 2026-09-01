@@ -1,60 +1,26 @@
-import asyncio
 import json
-from langchain_community.llms import Ollama
-from langchain.prompts import PromptTemplate
+import os
 
-llm = Ollama(model="llama3")
+DATA_FILE = "data_store.json"
 
-def generate_target_question(resume: str, jd: str, difficulty: int, asked_questions: list) -> str:
-    """Generates unique technical questions dynamically using Llama 3."""
-    prompt = PromptTemplate(
-        input_variables=["resume", "jd", "difficulty", "asked"],
-        template="""
-        You are a technical interviewer. Generate ONE technical question based on:
-        Job Description: {jd}
-        Resume: {resume}
-        Difficulty Level (1-5): {difficulty}
-        
-        Do NOT ask any of these previously asked questions: {asked}
-        Return ONLY the question text. Do not add intro/outro text.
-        """
-    )
-    chain = prompt | llm
-    return chain.invoke({
-        "resume": resume,
-        "jd": jd,
-        "difficulty": difficulty,
-        "asked": asked_questions
-    }).strip()
-
-async def eval_technical(transcript: str, jd: str):
-    prompt = f"Evaluate technical correctness (0-10) for answer: '{transcript}' against JD: '{jd}'. Format output strictly as JSON with keys 'score' (float) and 'feedback' (string)."
-    res = await asyncio.to_thread(llm.invoke, prompt)
-    return res
-
-async def eval_communication(transcript: str, wpm: float):
-    prompt = f"Evaluate STAR structure and clarity (0-10) for answer: '{transcript}' spoken at {wpm} WPM. Format output strictly as JSON with keys 'score' (float) and 'feedback' (string)."
-    res = await asyncio.to_thread(llm.invoke, prompt)
-    return res
-
-async def eval_verifier(transcript: str, resume: str):
-    prompt = f"Cross-verify claims (0-10) between transcript: '{transcript}' and resume: '{resume}'. Format output strictly as JSON with keys 'score' (float) and 'feedback' (string)."
-    res = await asyncio.to_thread(llm.invoke, prompt)
-    return res
-
-async def run_parallel_evaluations(transcript: str, jd: str, resume: str, wpm: float):
-    """Executes 3 automated evaluation agents asynchronously in parallel."""
-    results = await asyncio.gather(
-        eval_technical(transcript, jd),
-        eval_communication(transcript, wpm),
-        eval_verifier(transcript, resume)
-    )
-    
-    # Perfected phrase remediation synthesis
-    remediation_prompt = f"Rewrite this interview answer in ideal STAR format with strong technical terms: '{transcript}'"
-    perfected_phrase = await asyncio.to_thread(llm.invoke, remediation_prompt)
-    
+def get_default_db():
     return {
-        "raw_results": results,
-        "perfected_phrase": perfected_phrase.strip()
+        "session": {},
+        "questions": [],
+        "evaluations": []
     }
+
+def load_db():
+    """Loads session state from local JSON storage."""
+    if os.path.exists(DATA_FILE):
+        try:
+            with open(DATA_FILE, "r") as f:
+                return json.load(f)
+        except json.JSONDecodeError:
+            return get_default_db()
+    return get_default_db()
+
+def save_db(data):
+    """Persists current state into local JSON storage."""
+    with open(DATA_FILE, "w") as f:
+        json.dump(data, f, indent=2)
