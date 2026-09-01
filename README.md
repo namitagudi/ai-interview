@@ -1,12 +1,16 @@
-# ai-interview
+# AI Technical Interviewer & Remediation Platform
 
-# Local Agentic AI Interview Platform
+Pure Python, Streamlit-based interview platform featuring dynamic Llama 3 question generation, OpenAI Whisper speech transcription, parallel multi-agent evaluation, dynamic remediation quiz gates, and visual delta tracking charts.
 
-An interactive, local voice-based tech screening pipeline built with Streamlit, LangGraph, and OpenAI Whisper.
+## Setup Instructions
 
-## 🚀 How to Run Locally
-1. Install Ollama and run Llama 3: `ollama run llama3`
-2. Clone this repository and navigate inside.
-3. Install dependencies: `pip install -r requirements.txt`
-4. Initialize your local database: `python database/initdb.py`
-5. Boot up the user interface: `streamlit run app.py`
+1. **Install Prerequisites**:
+   - Install [Ollama](https://ollama.ai/) and run Llama 3:
+     ```bash
+     ollama pull llama3
+     ```
+   - Install FFmpeg (required for Whisper audio processing).
+
+2. **Install Python Dependencies**:
+   ```bash
+   pip install streamlit langchain langchain-community openai-whisper matplotlib numpy
