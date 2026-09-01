@@ -1,15 +1,26 @@
-from typing import List
+from typing import TypedDict, List, Dict, Any
 
-class InterviewState:
-    def __init__(self):
-        self.sessionid = ""
-        self.candidatename = ""
-        self.askedquestions = []      
-        self.currentquestion = ""
-        self.currenttranscript = ""    
-        self.techscore = 0.0
-        self.commscore = 0.0
-        self.wpm = 0
-        self.verifierscore = 0.0
-        self.perfectedphrase = ""
-        self.quizpassed = False
+class CandidateSession(TypedDict):
+    name: str
+    difficulty: int
+    resume: str
+    jd: str
+
+class AgentEvaluation(TypedDict):
+    tech_score: float
+    tech_feedback: str
+    comm_score: float
+    comm_feedback: str
+    verifier_score: float
+    verifier_feedback: str
+    perfected_phrase: str
+    ideal_tech: float
+    ideal_comm: float
+    ideal_verifier: float
+
+class InterviewState(TypedDict):
+    session: CandidateSession
+    questions: List[Dict[str, str]]
+    evaluations: List[AgentEvaluation]
+    current_q_index: int
+    quiz_passed: bool
