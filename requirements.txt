@@ -1,1 +1,7 @@
-
+streamlit
+langgraph
+langchain-community
+pandas
+openai-whisper
+sounddevice
+numpy
